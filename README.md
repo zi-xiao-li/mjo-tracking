@@ -7,6 +7,8 @@ This repository provides a clean workflow from preprocessing to event detection,
 
 ## Folder Structure
 
+```
+
 src/
 │
 ├── preprocess_olr.m              # Preprocess OLR: trim years, remove leap days, save new NetCDF
@@ -21,6 +23,7 @@ src/
 ├── plot_phase_speed_hist.m       # Histogram of MJO phase speeds
 └── plot_mjo_hovmoller.m          # WK99-style longitude–time composite plotting
 
+```
 ---
 
 ## Requirements
