@@ -37,14 +37,22 @@ src/
 
 The raw dataset should be a daily OLR NetCDF file, typically from NOAA:
 
+```
+
 olr(lat, lon, time)
 lat(lat)
 lon(lon)
 time(time)      % hours or days since a reference epoch
 
+```
+
 Place your raw file under:
 
+```
+
 data/raw/
+
+```
 
 ---
 
@@ -102,7 +110,11 @@ The pipeline produces:
 
 Figures can be stored under:
 
+```
+
 figures/
+
+```
 
 ---
 
