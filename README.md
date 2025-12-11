@@ -1,4 +1,4 @@
-# mjo-tracking
+# MJO-tracking
 
 A modular MATLAB toolkit for identifying, tracking, and compositing Madden–Julian Oscillation (MJO) events using daily OLR data.  
 This repository provides a clean workflow from preprocessing to event detection, propagation-speed estimation, and composite analysis.
@@ -29,7 +29,6 @@ src/
 ## Requirements
 
 - MATLAB R2020a or later  
-- Statistics & Machine Learning Toolbox  
 - NetCDF support (built-in for modern MATLAB)
 
 ---
@@ -55,56 +54,34 @@ Below is a minimal example showing how to run the full pipeline:
 
 ```
 
-%% --------------------------------------------------------------
+% MJO-tracking workflow
+
 % 1. Preprocess OLR (remove leap days, extract 1979–2013)
-%% --------------------------------------------------------------
 preprocess_olr('data/raw/olr.day.mean.nc', ...
                'data/processed/olr_1979_2013.nc', ...
                1979, 2013);
 
-%% --------------------------------------------------------------
-% 2. Compute equatorial OLR
-%% --------------------------------------------------------------
+% 2. Equatorial OLR and segments
 [olr_EQ, time, lon] = compute_equatorial_olr('data/processed/olr_1979_2013.nc');
+Seg                 = build_mjo_segments(olr_EQ, time, lon);
 
-%% --------------------------------------------------------------
-% 3. Build Hovmöller segments and identify t0 events
-%% --------------------------------------------------------------
-Seg = build_mjo_segments(olr_EQ, time, lon);
-
-%% --------------------------------------------------------------
-% 4. Track MJO propagation for all years
-%% --------------------------------------------------------------
-K_real = 1:0.1:25;
-ref_lon = 90;
-data_all = track_mjo_all_years(Seg, K_real, ref_lon);
-
-%% --------------------------------------------------------------
-% 5. Classify fast vs slow MJO events
-%% --------------------------------------------------------------
+% 3. Track MJO and classify speeds
+data_all = track_mjo_all_years(Seg, 1:0.1:25, 90);
 [data_all, data_fast, data_slow] = classify_mjo_speed( ...
     'PropagationInfo.xlsx', ...
     'PropagationInfo_all.xlsx', ...
     'PropagationInfo_fast.xlsx', ...
     'PropagationInfo_slow.xlsx');
 
-%% --------------------------------------------------------------
-% 6. Composite analysis
-%% --------------------------------------------------------------
-window = 30;
-[AllComp, FastComp, SlowComp] = composite_olr( ...
-    time, olr_EQ, data_all, data_fast, data_slow, window);
-
-%% --------------------------------------------------------------
-% 7. Student-t significance testing
-%% --------------------------------------------------------------
+% 4. Composites + significance
+[AllComp, FastComp, SlowComp] = composite_olr(time, olr_EQ, ...
+    data_all, data_fast, data_slow, 30);
 [t_fast, t_slow] = ttest_composite(FastComp, SlowComp);
 
-%% --------------------------------------------------------------
-% 8. Plot figures
-%% --------------------------------------------------------------
-plot_phase_speed_hist(data_all(:,4));      % histogram of speeds
+% 5. Plot
+plot_phase_speed_hist(data_all(:, 4));                 % phase-speed PDF
 plot_mjo_hovmoller(FastComp, SlowComp, t_fast, t_slow, lon);
+
 
 ```
 
